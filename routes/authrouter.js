@@ -14,8 +14,9 @@ var connection = mysql.createConnection({
     database : 'ursdata'
 });
 
-authRouter.get('/login', (req, res) => {
+authRouter.get('/login', async (req, res) => {
     var user = {
+        u_id: -9999,
         email: req.body.email,
         password: req.body.password
     }
@@ -28,8 +29,12 @@ authRouter.get('/login', (req, res) => {
             res.statusCode = 404;
             res.send("Email or Password Invalid. Try again.");
         } else {
+            user.u_id = results[0].u_id;
             res.statusCode = 200;
-            res.send("Login Successful");
+            res.send(user);
         }
     });
 });
+
+
+module.exports = authRouter;

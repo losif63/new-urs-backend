@@ -42,6 +42,7 @@ userRouter.post('/createuser', async (req, res) => {
                     res.send("Bad request");
                 }
             } else {
+                user.u_id = result.insertId;
                 console.log(result);
                 res.statusCode = 201;
                 res.setHeader('Content-Type', 'text/json');
