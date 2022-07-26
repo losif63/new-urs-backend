@@ -18,41 +18,79 @@ var connection = mysql.createConnection({
 
 reservationRouter.post('/createreservation', async (req, res) => {
     var reservation = {
+        r_id: -9999,
         u_id: req.body.u_id,
         l_id: req.body.l_id,
         username: req.body.username,
-        locationname: req.body.locationname,
         start_time: req.body.start_time,
         finish_time: req.body.finish_time,
         activity_name: req.body.activity_name
     }
 
-    // await connection.query(`INSERT INTO reservations (u_id, l_id, username, locationname, start_time, finish_time, activity_name)`)
-    
-    
-    // var user = {
-    //     u_id: -9999,
-    //     email: req.body.email,
-    //     password: req.body.password
-    // }
+    await connection.query(`INSERT INTO reservations (u_id, l_id, username, start_time, finish_time, activity_name) VALUES (${reservation.u_id}, ${reservation.l_id}, '${reservation.username}', '${reservation.start_time}', '${reservation.finish_time}', '${reservation.activity_name}')`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log("Create reservation request received");
+            reservation.r_id = result.insertId;
+            res.statusCode = 200;
+            res.json(reservation);
+        }
+    });
+});
 
-    //     await connection.query(`INSERT INTO users (email, password) VALUES ("${user.email}", "${user.password}");`, (error, result, fields) => {
-    //         if(error) {
-    //             console.log(error);
-    //             if(error.code === "ER_DUP_ENTRY") {
-    //                 res.statusCode = 409;
-    //                 res.send("Email already exists");
-    //             } else {
-    //                 res.statusCode = 400;
-    //                 res.send("Bad request");
-    //             }
-    //         } else {
-    //             console.log(result);
-    //             res.statusCode = 201;
-    //             res.setHeader('Content-Type', 'text/json');
-    //             res.json(user);
-    //         }
-    //     });
+reservationRouter.post('/myreservations', async (req, res) => {
+    var user = {
+        u_id: req.body.u_id
+    }
+
+    await connection.query(`SELECT * FROM reservations INNER JOIN locations ON reservations.l_id = locations.l_id WHERE reservations.u_id = ${user.u_id}`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log('Myreservations request received');
+            res.statusCode = 200;
+            res.send(result);
+        }
+    });
+});
+
+reservationRouter.post('/roomreservations', async (req, res) => {
+    var location = {
+        l_id: req.body.l_id,
+        interval_start: req.body.interval_start,
+        interval_end: req.body.interval_end
+    }
+
+    await connection.query(`SELECT * FROM reservations WHERE l_id = ${location.l_id} AND start_time >= '${location.interval_start}' AND finish_time <= '${location.interval_end}'`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log('Roomreservations request received');
+            res.send(result);
+        }
+    })
+});
+
+
+reservationRouter.delete('/cancelreservation', async (req, res) => {
+    
+    await connection.query(`DELETE FROM reservations WHERE r_id=${req.body.r_id} AND u_id=${req.body.u_id}`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log('Cancelreservation request received');
+            res.send(result);
+        }
+    });
 });
 
 

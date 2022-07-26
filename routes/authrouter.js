@@ -14,7 +14,8 @@ var connection = mysql.createConnection({
     database : 'ursdata'
 });
 
-authRouter.get('/login', async (req, res) => {
+authRouter.post('/login', async (req, res) => {
+    console.log(req.body);
     var user = {
         u_id: -9999,
         email: req.body.email,
@@ -23,12 +24,15 @@ authRouter.get('/login', async (req, res) => {
     
     await connection.query(`SELECT * FROM users WHERE email='${user.email}' AND password='${user.password}'`, (error, results, fields) => {
         if(error) {
+            console.log(error);
             res.statusCode = 400;
             res.send("Error. Try again.");   
         } else if (results.length === 0) {
+            console.log(results);
             res.statusCode = 404;
             res.send("Email or Password Invalid. Try again.");
         } else {
+            console.log(results);
             user.u_id = results[0].u_id;
             res.statusCode = 200;
             res.send(user);

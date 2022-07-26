@@ -4,6 +4,7 @@ const https = require('https');
 const path = require('path');
 const express = require('express');
 const mysql= require('mysql');
+const cors = require('cors');
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -12,9 +13,14 @@ var connection = mysql.createConnection({
   database : 'ursdata'
 });
 
+const corsOptions = {
+  origin: true,
+  credentials: true
+};
+
 const app = express();
 app.use(express.json());
-
+app.use(cors(corsOptions));
 
 /////////////////////////////////////////////////////////////////////
 
