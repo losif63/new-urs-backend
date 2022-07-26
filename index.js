@@ -27,8 +27,8 @@ app.use('/auth', authRouter);
 // const locationRouter = require('./routes/locationrouter');
 // app.use('/location', locationRouter);
 
-// const reservationRouter = require('./routes/reservationrouter');
-// app.use('/reservation', reservationRouter);
+const reservationRouter = require('./routes/reservationrouter');
+app.use('/reservation', reservationRouter);
 
 
 /////////////////////////////////////////////////////////////////////
