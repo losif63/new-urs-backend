@@ -18,6 +18,7 @@ authRouter.post('/login', async (req, res) => {
     console.log(req.body);
     var user = {
         u_id: -9999,
+        name: "",
         email: req.body.email,
         password: req.body.password
     }
@@ -34,6 +35,7 @@ authRouter.post('/login', async (req, res) => {
         } else {
             console.log(results);
             user.u_id = results[0].u_id;
+            user.name=results[0].name;
             res.statusCode = 200;
             res.send(user);
         }

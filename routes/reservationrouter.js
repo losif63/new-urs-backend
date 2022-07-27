@@ -59,6 +59,61 @@ reservationRouter.post('/myreservations', async (req, res) => {
     });
 });
 
+reservationRouter.post('/mycurrentreservations', async (req, res) => {
+    var user = {
+        u_id: req.body.u_id
+    }
+
+    await connection.query(`SELECT * FROM reservations INNER JOIN locations ON reservations.l_id = locations.l_id WHERE reservations.u_id = ${user.u_id} AND reservations.start_time <= CONVERT_TZ(NOW(), "+00:00", "+09:00") AND reservations.finish_time >= CONVERT_TZ(NOW(), "+00:00", "+09:00")`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log('MyCurrentreservations request received');
+            res.statusCode = 200;
+            res.send(result);
+        }
+    });
+});
+
+reservationRouter.post('/myfuturereservations', async (req, res) => {
+    var user = {
+        u_id: req.body.u_id
+    }
+
+    await connection.query(`SELECT * FROM reservations INNER JOIN locations ON reservations.l_id = locations.l_id WHERE reservations.u_id = ${user.u_id} AND reservations.start_time > CONVERT_TZ(NOW(), "+00:00", "+09:00")`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log('MyFuturereservations request received');
+            res.statusCode = 200;
+            res.send(result);
+        }
+    });
+});
+
+reservationRouter.post('/mypastreservations', async (req, res) => {
+    var user = {
+        u_id: req.body.u_id
+    }
+
+    await connection.query(`SELECT * FROM reservations INNER JOIN locations ON reservations.l_id = locations.l_id WHERE reservations.u_id = ${user.u_id} AND reservations.finish_time < CONVERT_TZ(NOW(), "+00:00", "+09:00")`, (error, result, fields) => {
+        if(error) {
+            console.log(error);
+            res.statusCode = 400;
+            res.send("Bad request");
+        } else {
+            console.log('MyPastreservations request received');
+            res.statusCode = 200;
+            res.send(result);
+        }
+    });
+});
+
+
 reservationRouter.post('/roomreservations', async (req, res) => {
     var location = {
         l_id: req.body.l_id,
@@ -79,9 +134,9 @@ reservationRouter.post('/roomreservations', async (req, res) => {
 });
 
 
-reservationRouter.delete('/cancelreservation', async (req, res) => {
+reservationRouter.patch('/cancelreservation', async (req, res) => {
     
-    await connection.query(`DELETE FROM reservations WHERE r_id=${req.body.r_id} AND u_id=${req.body.u_id}`, (error, result, fields) => {
+    await connection.query(`DELETE FROM reservations WHERE r_id = ${req.body.r_id} AND u_id = ${req.body.u_id}`, (error, result, fields) => {
         if(error) {
             console.log(error);
             res.statusCode = 400;

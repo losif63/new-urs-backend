@@ -28,10 +28,11 @@ userRouter.post('/createuser', async (req, res) => {
     var user = {
         u_id: -9999,
         email: req.body.email,
+        name: req.body.name,
         password: req.body.password
     }
 
-        await connection.query(`INSERT INTO users (email, password) VALUES ("${user.email}", "${user.password}");`, (error, result, fields) => {
+        await connection.query(`INSERT INTO users (email, password, name) VALUES ("${user.email}", "${user.password}", "${user.name}");`, (error, result, fields) => {
             if(error) {
                 console.log(error);
                 if(error.code === "ER_DUP_ENTRY") {
@@ -55,6 +56,7 @@ userRouter.put('/updateuser', async (req, res) => {
     console.log(req.body);
     var user = {
         u_id: req.body.u_id,
+        name: req.body.name,
         email: req.body.email,
         password: req.body.password
     }
