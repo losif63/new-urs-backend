@@ -124,10 +124,13 @@ reservationRouter.post('/roomreservations', async (req, res) => {
     await connection.query(`SELECT * FROM reservations WHERE l_id = ${location.l_id} AND start_time >= '${location.interval_start}' AND finish_time <= '${location.interval_end}'`, (error, result, fields) => {
         if(error) {
             console.log(error);
+            console.log(req.body);
             res.statusCode = 400;
             res.send("Bad request");
         } else {
             console.log('Roomreservations request received');
+            console.log(req.body);
+            console.log(result);
             res.send(result);
         }
     })
